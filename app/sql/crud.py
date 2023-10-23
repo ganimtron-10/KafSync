@@ -17,3 +17,10 @@ def create_customer(db: Session, customer: schemas.Customer):
     db.commit()
     db.refresh(db_customer)
     return db_customer
+
+
+def update_customer(db: Session, customer_id: int, customer: schemas.Customer):
+    row_cnt = db.query(models.Customer).filter(models.Customer.id == customer_id).update(
+        {models.Customer.name: customer.name, models.Customer.email: customer.email}, synchronize_session=False)
+    db.commit()
+    return row_cnt
