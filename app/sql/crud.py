@@ -11,9 +11,9 @@ def get_customer_by_email(db: Session, email: str):
     return db.query(models.Customer).filter(models.Customer.email == email).first()
 
 
-def create_customer(db: Session, user: schemas.Customer):
-    db_user = models.Customer(email=user.email, name=user.name)
-    db.add(db_user)
+def create_customer(db: Session, customer: schemas.Customer):
+    db_customer = models.Customer(email=customer.email, name=customer.name)
+    db.add(db_customer)
     db.commit()
-    db.refresh(db_user)
-    return db_user
+    db.refresh(db_customer)
+    return db_customer
