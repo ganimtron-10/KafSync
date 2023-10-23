@@ -36,3 +36,12 @@ async def modify_customer(customer_id: int, customer: schemas.Customer, db: Sess
         raise HTTPException(
             status_code=404, detail="Customer not found")
     return {"detail": "Customer updated Sucessfully"}
+
+
+@router.delete('/{customer_id}', status_code=200)
+async def remove_customer(customer_id: int, db: Session = Depends(database.get_db)):
+    db_customer = crud.delete_customer(db, customer_id)
+    if not db_customer:
+        raise HTTPException(
+            status_code=404, detail="Customer not found")
+    return {"detail": "Customer deleted Sucessfully"}
