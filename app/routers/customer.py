@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.post('/')
+@router.post('/', response_model=schemas.Customer)
 async def create_customer(customer: schemas.Customer, db: Session = Depends(database.get_db)):
     db_customer = crud.get_customer_by_email(db, email=customer.email)
     if db_customer:
@@ -20,7 +20,7 @@ async def create_customer(customer: schemas.Customer, db: Session = Depends(data
     return crud.create_customer(db=db, customer=customer)
 
 
-@router.get('/')
+@router.get('/', response_model=schemas.Customer)
 async def read_customer(customer_id: int, db: Session = Depends(database.get_db)):
     db_customer = crud.get_customer(db, customer_id)
     if db_customer is None:
