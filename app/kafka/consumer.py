@@ -65,7 +65,7 @@ c = Consumer({
     'auto.offset.reset': 'earliest'
 })
 
-c.subscribe(['stripe'])
+c.subscribe(["localtostripe", "stripetolocal"])
 
 while True:
     msg = c.poll(1.0)
