@@ -9,7 +9,51 @@ from . import producer
 db = database.SessionLocal()
 
 
-def handle_message(msg: Message):
+def handle_topic_stripe_to_local(msg):
+    partition = msg.partition()
+    if partition == 0:
+        # Create
+        data = json.loads(msg.value().decode('utf-8'))
+        customer = schemas.Customer(**data['customer'])
+        stripe_cust_id = data["stripe_customer_id"]
+
+        customer = sql_crud.create_customer(db, customer, create_message=False)
+        print(
+            f"Sucessfully Created Local Customer with local id {customer.id}")
+
+        sql_crud.create_idmap(db, customer.id, stripe_cust_id)
+        print(
+            f"Sucessfully Created Id mapping of {customer.id} - {stripe_cust_id}")
+
+    elif partition == 1:
+        # Update
+        data = json.loads(msg.value().decode('utf-8'))
+        customer = schemas.Customer(**data['customer'])
+
+        customer_id = data['customer_id']
+
+        sql_crud.update_customer(
+            db, customer_id, customer, create_message=False)
+
+        print(
+            f"Sucessfully Updated Local Customer with local id {customer_id}")
+
+    elif partition == 2:
+        # Delete
+        data = json.loads(msg.value().decode('utf-8'))
+
+        customer_id = data['customer_id']
+
+        sql_crud.delete_customer(db, customer_id, create_message=False)
+
+        print(
+            f"Sucessfully Deleted Local Customer with local id {customer_id}")
+
+    else:
+        print("Unable to handle this message")
+
+
+def handle_topic_local_to_stripe(msg):
     partition = msg.partition()
     if partition == 0:
         # Create
@@ -32,8 +76,8 @@ def handle_message(msg: Message):
         data = json.loads(msg.value().decode('utf-8'))
         customer = schemas.Customer(**data['customer'])
 
-        stripe_cust_id = sql_crud.get_idmap(db,
-                                            data['customer_id']).externalid
+        stripe_cust_id = sql_crud.get_idmap_from_localid(db,
+                                                         data['customer_id']).externalid
         stripe_customer_data = stripe_crud.update_customer(
             stripe_cust_id, customer)
         if stripe_customer_data.get("error") is not None:
@@ -46,8 +90,8 @@ def handle_message(msg: Message):
         # Delete
         data = json.loads(msg.value().decode('utf-8'))
 
-        stripe_cust_id = sql_crud.get_idmap(db,
-                                            data['customer_id']).externalid
+        stripe_cust_id = sql_crud.get_idmap_from_localid(db,
+                                                         data['customer_id']).externalid
         stripe_customer_data = stripe_crud.delete_customer(stripe_cust_id)
         if stripe_customer_data.get("error") is not None:
             print(stripe_customer_data)
@@ -57,6 +101,16 @@ def handle_message(msg: Message):
             f"Sucessfully Deleted Stripe Customer with local id {data['customer_id']}")
     else:
         print("Unable to handle this message")
+
+
+def handle_message(msg: Message):
+    topic = msg.topic()
+    if topic == "localtostripe":
+        handle_topic_local_to_stripe(msg)
+    elif topic == "stripetolocal":
+        handle_topic_stripe_to_local(msg)
+    else:
+        print(f"Can't Handle the topic {topic}")
 
 
 c = Consumer({
