@@ -1,5 +1,6 @@
 import json
 
+from typing import List
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -14,8 +15,8 @@ def get_customer_by_email(db: Session, email: str):
     return db.query(models.Customer).filter(models.Customer.email == email).first()
 
 
-def get_all_customers(db: Session):
-    return db.query(models.Customer).all()
+def get_all_customer_with_externalid(db: Session, external_ids: List):
+    return db.query(models.Customer, models.IDMap).join(models.IDMap, models.Customer.id == models.IDMap.localid).all()
 
 
 def create_customer(db: Session, customer: schemas.Customer, create_message: bool = True):
