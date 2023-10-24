@@ -24,7 +24,7 @@ def create_customer(db: Session, customer: schemas.Customer):
         "customer": customer.model_dump()
     }
     remaining_message = producer.produce_message(
-        json.dumps(data), partition=0)
+        json.dumps(data), topic="localtostripe", partition=0)
     if remaining_message == 0:
         db.commit()
         return db_customer
@@ -39,7 +39,7 @@ def update_customer(db: Session, customer_id: int, customer: schemas.Customer):
             "customer": customer.model_dump()
         }
         remaining_message = producer.produce_message(
-            json.dumps(data), partition=1)
+            json.dumps(data), topic="localtostripe", partition=1)
         if remaining_message == 0:
             db.commit()
             return row_cnt
@@ -53,7 +53,7 @@ def delete_customer(db: Session, customer_id: int):
             "customer_id": customer_id
         }
         remaining_message = producer.produce_message(
-            json.dumps(data), partition=2)
+            json.dumps(data), topic="localtostripe", partition=2)
         if remaining_message == 0:
             db.commit()
             return row_cnt
