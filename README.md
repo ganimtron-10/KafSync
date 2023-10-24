@@ -31,26 +31,33 @@ Follow these steps to set up Kafsync locally:
      STRIPE_API_KEY=<Your Stripe API key>
      ```
 
-4. **Start the Server:**
+4. **Execute Kafka Resources Setup:**
+
+   - Run `kafka/admin.py` to configure Kafka resources, including topics and partitions.
+
+5. **Start the Scheduled Poller:**
+
+   - Run the following command to start the scheduled poller:
+     ```
+     python -m app.schedule-poll.py
+     ```
+
+6. **Start the Server:**
 
    - Run the following command to start the server using Uvicorn with auto-reload:
      ```
      uvicorn app.main:app --reload
      ```
 
-5. **Execute Kafka Resources Setup:**
-
-   - Run `kafka/admin.py` to configure Kafka resources, including topics and partitions.
-
-6. **Execute Kafka Consumer:**
+7. **Execute Kafka Consumer:**
 
    - Start the Kafka consumer by running `kafka/consumer.py`. This consumer listens for events and processes data for synchronization.
 
-7. **Access the API:**
+8. **Access the API:**
 
    - Open a web browser and navigate to `http://localhost:8000/docs` to interact with the API endpoints. Use this interface to trigger events for customer synchronization.
 
-8. **Interact with Stripe:**
+9. **Interact with Stripe:**
 
    - Access your Stripe account and interact with it to observe the two-way synchronization between your local environment and Stripe.
 
