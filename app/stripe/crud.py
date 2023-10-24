@@ -11,7 +11,7 @@ load_dotenv(find_dotenv())
 stripe.api_key = os.getenv("STRIPE_API_KEY")
 
 
-def create_stripe_customer(customer: Customer):
+def create_stripe_customer(customer: schemas.Customer):
     try:
         return stripe.Customer.create(name=customer.name, email=customer.email)
     except:
@@ -25,7 +25,7 @@ def get_stripe_customer(customer_id: str):
         return {'error': "Unable to get Customer"}
 
 
-def update_stripe_customer(customer_id: str, customer: Customer):
+def update_stripe_customer(customer_id: str, customer: schemas.Customer):
     try:
         return stripe.Customer.modify(id=customer_id, name=customer.name, email=customer.email)
     except:
