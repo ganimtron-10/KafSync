@@ -68,5 +68,9 @@ def create_idmap(db: Session, localid: int, externalid: str):
     return idmap_element
 
 
-def get_idmap(db: Session, localid: int):
+def get_idmap_from_localid(db: Session, localid: int):
     return db.query(models.IDMap).filter(models.IDMap.localid == localid).first()
+
+
+def get_idmap_from_externalid(db: Session, externalid: int):
+    return db.query(models.IDMap).filter(models.IDMap.externalid == externalid).first()
