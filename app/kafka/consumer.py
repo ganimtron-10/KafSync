@@ -7,16 +7,16 @@ def handle_message(msg: Message):
     partition = msg.partition()
     if partition == 0:
         # Create
-        print(f"[Create] Message - {msg.value()}")
-        pass
+        data = json.loads(msg.value().decode('utf-8'))
+        print(f"[Create] Message - {data['customer']}")
     elif partition == 1:
         # Update
-        print(f"[Update] Message - {msg.value()}")
-        pass
+        data = json.loads(msg.value().decode('utf-8'))
+        print(f"[Update] Message - {data['customer_id']} - {data['customer']}")
     elif partition == 2:
         # Delete
-        print(f"[Delete] Message - {msg.value()}")
-        pass
+        data = json.loads(msg.value().decode('utf-8'))
+        print(f"[Delete] Message - {data['customer_id']}")
     else:
         print("Unable to handle this message")
 
