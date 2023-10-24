@@ -17,14 +17,16 @@ def get_customer_by_email(db: Session, email: str):
 def create_customer(db: Session, customer: schemas.Customer):
     db_customer = models.Customer(email=customer.email, name=customer.name)
     db.add(db_customer)
+    db.flush()
+    db.refresh(db_customer)
     data = {
+        "customer_id": db_customer.id,
         "customer": customer.model_dump()
     }
     remaining_message = producer.produce_message(
         json.dumps(data), partition=0)
     if remaining_message == 0:
         db.commit()
-        db.refresh(db_customer)
         return db_customer
 
 
@@ -61,7 +63,7 @@ def create_idmap(db: Session, localid: int, externalid: str):
     idmap_element = models.IDMap(localid=localid, externalid=externalid)
     db.add(idmap_element)
     db.commit()
-    db.refresh(db_customer)
+    db.refresh(idmap_element)
     return idmap_element
 
 
