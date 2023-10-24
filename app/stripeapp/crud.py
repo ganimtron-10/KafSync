@@ -25,6 +25,13 @@ def get_customer(customer_id: str):
         return {'error': "Unable to get Customer", 'details': e}
 
 
+def get_customer_list():
+    try:
+        return stripe.Customer.list()
+    except Exception as e:
+        return {'error': "Unable to get Customer", 'details': e}
+
+
 def update_customer(customer_id: str, customer: schemas.Customer):
     try:
         return stripe.Customer.modify(id=customer_id, name=customer.name, email=customer.email)

@@ -15,7 +15,7 @@ def delivery_report(err, msg):
             msg.topic(), msg.partition()))
 
 
-def produce_message(message: str, topic: str = "stripe", partition: int = None):
+def produce_message(message: str, topic: str = None, partition: int = None):
     p.poll(0)
 
     p.produce(topic, message.encode('utf-8'),

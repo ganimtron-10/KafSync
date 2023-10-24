@@ -3,7 +3,7 @@ from confluent_kafka.admin import AdminClient, NewTopic
 admin_client = AdminClient({'bootstrap.servers': 'localhost'})
 
 new_topics = [NewTopic(topic, num_partitions=3, replication_factor=1)
-              for topic in ["stripe"]]
+              for topic in ["localtostripe", "stripetolocal"]]
 
 fs = admin_client.create_topics(new_topics)
 
