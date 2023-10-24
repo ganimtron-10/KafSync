@@ -55,3 +55,15 @@ def delete_customer(db: Session, customer_id: int):
         if remaining_message == 0:
             db.commit()
             return row_cnt
+
+
+def create_idmap(db: Session, localid: int, externalid: str):
+    idmap_element = models.IDMap(localid=localid, externalid=externalid)
+    db.add(idmap_element)
+    db.commit()
+    db.refresh(db_customer)
+    return idmap_element
+
+
+def get_idmap(db: Session, localid: int):
+    return db.query(models.IDMap).filter(models.IDMap.localid == localid).first()
