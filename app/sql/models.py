@@ -9,3 +9,10 @@ class Customer(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     email = Column(String, unique=True)
+
+
+class IDMap(Base):
+    __tablename__ = "idmap"
+
+    localid = Column(Integer, primary_key=True, index=True)
+    externalid = Column(String)
