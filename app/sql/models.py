@@ -15,4 +15,4 @@ class IDMap(Base):
     __tablename__ = "idmap"
 
     localid = Column(Integer, primary_key=True, index=True)
-    stripeid = Column(String)
+    externalid = Column(String)
