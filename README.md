@@ -33,7 +33,7 @@ Follow these steps to set up Kafsync locally:
 
 4. **Execute Kafka Resources Setup:**
 
-   - Run `kafka/admin.py` to configure Kafka resources, including topics and partitions.
+   - Run `app/kafka/admin.py` to configure Kafka resources, including topics and partitions.
 
 5. **Start the Scheduled Poller:**
 
@@ -51,7 +51,7 @@ Follow these steps to set up Kafsync locally:
 
 7. **Execute Kafka Consumer:**
 
-   - Start the Kafka consumer by running `kafka/consumer.py`. This consumer listens for events and processes data for synchronization.
+   - Start the Kafka consumer by running `app/kafka/consumer.py`. This consumer listens for events and processes data for synchronization.
 
 8. **Access the API:**
 
