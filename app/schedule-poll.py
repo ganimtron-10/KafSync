@@ -7,13 +7,15 @@ from .stripeapp import crud as stripe_crud
 from .sql import database, crud as sql_crud, schemas
 from .kafka import producer
 
+db = database.SessionLocal()
+
 
 def sync_customer(customers):
     customer_list = []
     for customer in customers:
         customer_list.append(customer.id)
         localid = sql_crud.get_idmap_from_externalid(
-            database.SessionLocal(), customer.id)
+            db, customer.id)
         local_customer = schemas.Customer(
             name=customer.name, email=customer.email)
         if localid is None:
@@ -35,7 +37,7 @@ def sync_customer(customers):
 
     # find customers to be deleted and delete it
     customer_idmap_list = sql_crud.get_all_customer_with_externalid(
-        database.SessionLocal(), customer_list)
+        db, customer_list)
     for customer, idmap in customer_idmap_list:
         if idmap.externalid not in customer_list:
             data = {
