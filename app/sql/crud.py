@@ -79,3 +79,11 @@ def get_idmap_from_localid(db: Session, localid: int):
 
 def get_idmap_from_externalid(db: Session, externalid: int):
     return db.query(models.IDMap).filter(models.IDMap.externalid == externalid).first()
+
+
+def delete_idmap_by_localid(db: Session, localid: int):
+    row_cnt = db.query(models.IDMap).filter(models.IDMap.localid ==
+                                            localid).delete(synchronize_session=False)
+    if row_cnt > 0:
+        db.commit()
+        return row_cnt
