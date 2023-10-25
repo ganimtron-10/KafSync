@@ -45,6 +45,7 @@ def handle_topic_stripe_to_local(msg):
         customer_id = data['customer_id']
 
         sql_crud.delete_customer(db, customer_id, create_message=False)
+        sql_crud.delete_idmap_by_localid(db, customer_id)
 
         print(
             f"Sucessfully Deleted Local Customer with local id {customer_id}")
@@ -97,6 +98,7 @@ def handle_topic_local_to_stripe(msg):
             print(stripe_customer_data)
             return
 
+        sql_crud.delete_idmap_by_localid(db, data['customer_id'])
         print(
             f"Sucessfully Deleted Stripe Customer with local id {data['customer_id']}")
     else:
