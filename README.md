@@ -4,7 +4,7 @@ Kafsync is a simple integration application that synchronizes customer data betw
 
 ## Local Setup
 
-Follow these steps to set up Kafsync locally:
+Follow these steps to set up KafSync locally or execute this `run.sh` file:
 
 1. **Setup Kafka Using Docker:**
 
