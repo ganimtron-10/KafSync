@@ -32,8 +32,9 @@ def sync_customer(customers):
                 "customer_id": localid.localid,
                 "customer": local_customer.model_dump()
             }
-            producer.produce_message(
-                json.dumps(data), topic="stripetolocal", partition=1)
+            if not sql_crud.is_data_same(db, data["customer_id"], local_customer):
+                producer.produce_message(
+                    json.dumps(data), topic="stripetolocal", partition=1)
 
     # find customers to be deleted and delete it
     customer_idmap_list = sql_crud.get_all_customer_with_externalid(
