@@ -87,3 +87,13 @@ def delete_idmap_by_localid(db: Session, localid: int):
     if row_cnt > 0:
         db.commit()
         return row_cnt
+
+
+def is_data_same(db: Session, customer_id: int, customer: models.Customer):
+    existing_customer = db.query(models.Customer).filter(
+        models.Customer.id == customer_id).first()
+
+    if existing_customer:
+        return existing_customer.name == customer.name and existing_customer.email == customer.email
+
+    return False
