@@ -30,7 +30,12 @@ def handle_topic_stripe_to_local(msg):
         data = json.loads(msg.value().decode('utf-8'))
         customer = schemas.Customer(**data['customer'])
 
-        customer_id = data['customer_id']
+        if data.get('customer_id'):
+            customer_id = data['customer_id']
+        else:
+            stripe_cust_id = data["stripe_customer_id"]
+            customer_id = sql_crud.get_idmap_from_externalid(
+                db, stripe_cust_id).localid
 
         sql_crud.update_customer(
             db, customer_id, customer, create_message=False)
@@ -42,7 +47,12 @@ def handle_topic_stripe_to_local(msg):
         # Delete
         data = json.loads(msg.value().decode('utf-8'))
 
-        customer_id = data['customer_id']
+        if data.get('customer_id'):
+            customer_id = data['customer_id']
+        else:
+            stripe_cust_id = data["stripe_customer_id"]
+            customer_id = sql_crud.get_idmap_from_externalid(
+                db, stripe_cust_id).localid
 
         sql_crud.delete_customer(db, customer_id, create_message=False)
         sql_crud.delete_idmap_by_localid(db, customer_id)
