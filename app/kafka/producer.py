@@ -1,11 +1,11 @@
 import json
 
-from confluent_kafka import Producer
+from confluent_kafka import Producer, Message
 
 p = Producer({'bootstrap.servers': 'localhost'})
 
 
-def delivery_report(err, msg) -> None:
+def delivery_report(err, msg: Message) -> None:
     """
     Called once for each message produced to indicate delivery result.
     Triggered by poll() or flush().
