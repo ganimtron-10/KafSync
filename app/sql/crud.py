@@ -20,49 +20,61 @@ def get_all_customer_with_externalid(db: Session, external_ids: List):
 
 
 def create_customer(db: Session, customer: schemas.Customer, create_message: bool = True):
-    db_customer = models.Customer(email=customer.email, name=customer.name)
-    db.add(db_customer)
-    db.flush()
-    db.refresh(db_customer)
-    if create_message:
-        data = {
-            "customer_id": db_customer.id,
-            "customer": customer.model_dump()
-        }
-        producer.produce_message(
-            json.dumps(data), topic="localtostripe", partition=0)
-    db.commit()
-    return db_customer
-
-
-def update_customer(db: Session, customer_id: int, customer: schemas.Customer, create_message: bool = True):
-    row_cnt = db.query(models.Customer).filter(models.Customer.id == customer_id).update(
-        {models.Customer.name: customer.name, models.Customer.email: customer.email}, synchronize_session=False)
-    if row_cnt > 0:
+    try:
+        db_customer = models.Customer(email=customer.email, name=customer.name)
+        db.add(db_customer)
+        db.flush()
+        db.refresh(db_customer)
         if create_message:
             data = {
-                "customer_id": customer_id,
+                "customer_id": db_customer.id,
                 "customer": customer.model_dump()
             }
             producer.produce_message(
-                json.dumps(data), topic="localtostripe", partition=1)
+                json.dumps(data), topic="localtostripe", partition=0)
         db.commit()
-        return row_cnt
+        return db_customer
+    except:
+        db.rollback()
+        return None
+
+
+def update_customer(db: Session, customer_id: int, customer: schemas.Customer, create_message: bool = True):
+    try:
+        row_cnt = db.query(models.Customer).filter(models.Customer.id == customer_id).update(
+            {models.Customer.name: customer.name, models.Customer.email: customer.email}, synchronize_session=False)
+        if row_cnt > 0:
+            if create_message:
+                data = {
+                    "customer_id": customer_id,
+                    "customer": customer.model_dump()
+                }
+                producer.produce_message(
+                    json.dumps(data), topic="localtostripe", partition=1)
+            db.commit()
+            return row_cnt
+    except:
+        db.rollback()
+        return None
 
 
 def delete_customer(db: Session, customer_id: int, create_message: bool = True):
-    row_cnt = db.query(models.Customer).filter(models.Customer.id ==
-                                               customer_id).delete(synchronize_session=False)
-    if row_cnt > 0:
-        if create_message:
-            data = {
-                "customer_id": customer_id
-            }
-            producer.produce_message(
-                json.dumps(data), topic="localtostripe", partition=2)
+    try:
+        row_cnt = db.query(models.Customer).filter(models.Customer.id ==
+                                                   customer_id).delete(synchronize_session=False)
+        if row_cnt > 0:
+            if create_message:
+                data = {
+                    "customer_id": customer_id
+                }
+                producer.produce_message(
+                    json.dumps(data), topic="localtostripe", partition=2)
 
-        db.commit()
-        return row_cnt
+            db.commit()
+            return row_cnt
+    except:
+        db.rollback()
+        return None
 
 
 def create_idmap(db: Session, localid: int, externalid: str):
