@@ -35,12 +35,22 @@ Follow these steps to set up Kafsync locally:
 
    - Run `app/kafka/admin.py` to configure Kafka resources, including topics and partitions.
 
-5. **Start the Scheduled Poller:**
+5. **Choose Between Polling or Webhook Setup:**
 
-   - Run the following command to start the scheduled poller:
-     ```
-     python -m app.schedule-poll.py
-     ```
+   - Decide on the synchronization method for Stripe integration. You can either use the polling mechanism or set up a webhook endpoint in Stripe.
+  
+      - **Option 1: Polling Mechanism**
+        Start the scheduled poller by running the following command:
+        ```bash
+        python -m app.schedule-poll.py
+        ```
+  
+      - **Option 2: Webhook Setup**
+        Manually set up a webhook endpoint in your local environment using a tool like Ngrok or Localtunnel. Note the public URL generated and configure it in your Stripe account like https://{public_URL}/api/v1/customers/webhook. LocalTunnel usage can be as follows:
+        ```bash
+        npm install -g localtunnel
+        lt -p 8000
+        ```
 
 6. **Start the Server:**
 
@@ -69,6 +79,7 @@ You should now be able to see the synchronization in action.
 
 ## Next Steps
 
-- Create a Docker Image to ease the Process
-- Fix and improve few functionalities
+
+Checkout [Issues](https://github.com/ganimtron-10/KafSync/issues) section for more information on things that are to be implemented, improved, and fixed.
+
 

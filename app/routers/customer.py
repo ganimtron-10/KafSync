@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from ..sql import crud, database, schemas, models
+from ..stripeapp import webhook as stripe_webhook
 
 models.Base.metadata.create_all(bind=database.engine)
 
@@ -45,3 +46,14 @@ async def remove_customer(customer_id: int, db: Session = Depends(database.get_d
         raise HTTPException(
             status_code=404, detail="Customer not found")
     return {"detail": "Customer deleted Sucessfully"}
+
+
+@router.post('/webhook', status_code=200)
+async def webhook(request: Request):
+    payload = await request.json()
+    try:
+        stripe_webhook.handle_event(payload)
+        return {"detail": "Event Sucessfully Captured"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=404, detail=e)
