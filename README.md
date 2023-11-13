@@ -46,8 +46,9 @@ Follow these steps to set up Kafsync locally:
         ```
   
       - **Option 2: Webhook Setup**
-        Manually set up a webhook endpoint in your local environment using a tool like Ngrok or Localtunnel. Note the public URL generated and configure it in your Stripe account.
+        Manually set up a webhook endpoint in your local environment using a tool like Ngrok or Localtunnel. Note the public URL generated and configure it in your Stripe account like https://{public_URL}/api/v1/customers/webhook. LocalTunnel usage can be as follows:
         ```bash
+        npm install -g localtunnel
         lt -p 8000
         ```
 
