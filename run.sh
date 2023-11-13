@@ -21,6 +21,6 @@ python -m app.schedule-poll.py &
 uvicorn app.main:app --reload &
 
 # Step 7: Start the Kafka Consumer
-python -m app.kafka.consumer &
+python -m app.kafka.consumer.py &
 
 echo "KafSync is now running. Access the API at http://localhost:8000/docs."
