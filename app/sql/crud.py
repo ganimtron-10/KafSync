@@ -86,6 +86,7 @@ def create_customer(db: Session, customer: schemas.Customer, create_message: boo
             }
             producer.produce_message(
                 json.dumps(data), topic="localtostripe", partition=2)
+        raise  # bare raise to maintain the stack trace
 
 
 def update_customer(db: Session, customer_id: int, customer: schemas.Customer, create_message: bool = True) -> int:
@@ -112,7 +113,6 @@ def update_customer(db: Session, customer_id: int, customer: schemas.Customer, c
                         "customer_id": customer_id,
                         "customer": customer.model_dump()
                     }
-
                     producer.produce_message(
                         json.dumps(data), topic="localtostripe", partition=1)
                     msg_sucess = True
@@ -128,6 +128,7 @@ def update_customer(db: Session, customer_id: int, customer: schemas.Customer, c
             }
             producer.produce_message(
                 json.dumps(data), topic="localtostripe", partition=1)
+        raise  # bare raise to maintain the stack trace
 
 
 def delete_customer(db: Session, customer_id: int, create_message: bool = True) -> int:
@@ -167,6 +168,7 @@ def delete_customer(db: Session, customer_id: int, create_message: bool = True) 
             }
             producer.produce_message(
                 json.dumps(data), topic="localtostripe", partition=0)
+        raise  # bare raise to maintain the stack trace
 
 
 def create_idmap(db: Session, localid: int, externalid: str) -> models.IDMap:
