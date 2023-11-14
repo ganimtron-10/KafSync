@@ -1,4 +1,5 @@
 import os
+from typing import Dict, Union, List
 
 from dotenv import load_dotenv, find_dotenv
 import stripe
@@ -11,7 +12,7 @@ load_dotenv(find_dotenv())
 stripe.api_key = os.getenv("STRIPE_API_KEY")
 
 
-def create_customer(customer: schemas.Customer) -> Dict | stripe.Customer:
+def create_customer(customer: schemas.Customer) -> Union[Dict, stripe.Customer]:
     """
     Create a new customer on the Stripe platform.
 
@@ -28,7 +29,7 @@ def create_customer(customer: schemas.Customer) -> Dict | stripe.Customer:
         return {'error': "Unable to create Customer", 'details': e}
 
 
-def get_customer(customer_id: str) -> Dict | stripe.Customer:
+def get_customer(customer_id: str) -> Union[Dict, stripe.Customer]:
     """
     Retrieve customer data from the Stripe platform.
 
@@ -44,7 +45,7 @@ def get_customer(customer_id: str) -> Dict | stripe.Customer:
         return {'error': "Unable to get Customer", 'details': e}
 
 
-def get_customer_list() -> Dict | List[stripe.Customer]:
+def get_customer_list() -> Union[Dict, List[stripe.Customer]]:
     """
     Retrieve a list of customers from the Stripe platform.
 
@@ -57,7 +58,7 @@ def get_customer_list() -> Dict | List[stripe.Customer]:
         return {'error': "Unable to get Customer", 'details': e}
 
 
-def update_customer(customer_id: str, customer: schemas.Customer) -> Dict | stripe.Customer:
+def update_customer(customer_id: str, customer: schemas.Customer) -> Union[Dict, stripe.Customer]:
     """
     Update an existing customer on the Stripe platform.
 
@@ -74,7 +75,7 @@ def update_customer(customer_id: str, customer: schemas.Customer) -> Dict | stri
         return {'error': "Unable to update Customer", 'details': e}
 
 
-def delete_customer(customer_id: str) -> Dict | stripe.Deleted:
+def delete_customer(customer_id: str) -> Union[Dict, stripe.Customer]:
     """
     Delete a customer from the Stripe platform.
 
