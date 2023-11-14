@@ -142,18 +142,31 @@ def delete_customer(db: Session, customer_id: int, create_message: bool = True) 
     Returns:
     int: Number of rows deleted.
     """
-    row_cnt = db.query(models.Customer).filter(models.Customer.id ==
-                                               customer_id).delete(synchronize_session=False)
-    if row_cnt > 0:
-        if create_message:
+    msg_sucess = None
+    try:
+        with db.begin_nested():
+            row_cnt = db.query(models.Customer).filter(models.Customer.id ==
+                                                       customer_id).delete(synchronize_session=False)
+            if row_cnt > 0:
+                if create_message:
+                    data = {
+                        "customer_id": customer_id
+                    }
+                    producer.produce_message(
+                        json.dumps(data), topic="localtostripe", partition=2)
+                    msg_sucess = True
+                return row_cnt
+    except Exception as e:
+        print(e)
+        if msg_sucess:
+            # reverting the produced message action
+            model_customer = get_customer(db, customer_id)
             data = {
-                "customer_id": customer_id
+                "customer_id": customer_id,
+                "customer": schemas.Customer(name=model_customer.name, email=model_customer.email).model_dump()
             }
             producer.produce_message(
-                json.dumps(data), topic="localtostripe", partition=2)
-
-        db.commit()
-        return row_cnt
+                json.dumps(data), topic="localtostripe", partition=0)
 
 
 def create_idmap(db: Session, localid: int, externalid: str) -> models.IDMap:
