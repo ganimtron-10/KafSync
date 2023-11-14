@@ -3,6 +3,9 @@ import json
 
 import schedule
 
+from typing import List
+from stripe import Customer as StripeCustomer
+
 from .stripeapp import crud as stripe_crud
 from .sql import database, crud as sql_crud, schemas
 from .kafka import producer
@@ -10,7 +13,16 @@ from .kafka import producer
 db = database.SessionLocal()
 
 
-def sync_customer(customers):
+def sync_customer(customers: List[StripeCustomer]) -> None:
+    """
+    Synchronize customer data between Stripe and local database.
+
+    Parameters:
+    - customers (List[StripeCustomer]): List of Stripe customer objects.
+
+    Returns:
+    None
+    """
     customer_list = []
     for customer in customers:
         customer_list.append(customer.id)
@@ -48,7 +60,14 @@ def sync_customer(customers):
                 json.dumps(data), topic="stripetolocal", partition=2)
 
 
-def poll_stripe_customers():
+def poll_stripe_customers() -> None:
+    """
+    Poll Stripe for customer updates periodically.
+
+    Returns:
+    None
+    """
+
     print("Polling started...")
 
     customers = stripe_crud.get_customer_list()
