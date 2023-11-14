@@ -101,18 +101,33 @@ def update_customer(db: Session, customer_id: int, customer: schemas.Customer, c
     Returns:
     int: Number of rows updated.
     """
-    row_cnt = db.query(models.Customer).filter(models.Customer.id == customer_id).update(
-        {models.Customer.name: customer.name, models.Customer.email: customer.email}, synchronize_session=False)
-    if row_cnt > 0:
-        if create_message:
+    msg_sucess = None
+    try:
+        with db.begin_nested():
+            row_cnt = db.query(models.Customer).filter(models.Customer.id == customer_id).update(
+                {models.Customer.name: customer.name, models.Customer.email: customer.email}, synchronize_session=False)
+            if row_cnt > 0:
+                if create_message:
+                    data = {
+                        "customer_id": customer_id,
+                        "customer": customer.model_dump()
+                    }
+
+                    producer.produce_message(
+                        json.dumps(data), topic="localtostripe", partition=1)
+                    msg_sucess = True
+                return row_cnt
+    except Exception as e:
+        print(e)
+        if msg_sucess:
+            # reverting the produced message action
+            model_customer = get_customer(db, customer_id)
             data = {
                 "customer_id": customer_id,
-                "customer": customer.model_dump()
+                "customer": schemas.Customer(name=model_customer.name, email=model_customer.email).model_dump()
             }
             producer.produce_message(
                 json.dumps(data), topic="localtostripe", partition=1)
-        db.commit()
-        return row_cnt
 
 
 def delete_customer(db: Session, customer_id: int, create_message: bool = True) -> int:
