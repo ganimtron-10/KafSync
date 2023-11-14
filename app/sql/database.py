@@ -15,6 +15,9 @@ Base = declarative_base()
 
 
 def get_db():
+    """
+    Create a new database session for each request.
+    """
     db = SessionLocal()
     try:
         yield db

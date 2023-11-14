@@ -1,13 +1,22 @@
 import json
 
-from confluent_kafka import Producer
+from confluent_kafka import Producer, Message
 
 p = Producer({'bootstrap.servers': 'localhost'})
 
 
-def delivery_report(err, msg):
-    """ Called once for each message produced to indicate delivery result.
-        Triggered by poll() or flush(). """
+def delivery_report(err, msg: Message) -> None:
+    """
+    Called once for each message produced to indicate delivery result.
+    Triggered by poll() or flush().
+
+    Parameters:
+    - err: Delivery error (if any).
+    - msg: Message object.
+
+    Returns:
+    None
+    """
     if err is not None:
         print('Message delivery failed: {}'.format(err))
     else:
@@ -15,7 +24,19 @@ def delivery_report(err, msg):
             msg.topic(), msg.partition()))
 
 
-def produce_message(message: str, topic: str = None, partition: int = None):
+def produce_message(message: str, topic: str = None, partition: int = None) -> None:
+    """
+    Produce a message to a Kafka topic.
+
+    Parameters:
+    - message (str): Message content.
+    - topic (str): Kafka topic to produce the message to.
+    - partition (int): Kafka partition to use for message delivery.
+
+    Returns:
+    None
+    """
+
     p.poll(0)
 
     p.produce(topic, message.encode('utf-8'),

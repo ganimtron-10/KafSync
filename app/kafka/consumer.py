@@ -9,7 +9,16 @@ from . import producer
 db = database.SessionLocal()
 
 
-def handle_topic_stripe_to_local(msg):
+def handle_topic_stripe_to_local(msg: Message) -> None:
+    """
+    Handle messages from the 'stripetolocal' Kafka topic.
+
+    Parameters:
+    - msg (Message): Kafka message object.
+
+    Returns:
+    None
+    """
     partition = msg.partition()
     if partition == 0:
         # Create
@@ -64,7 +73,16 @@ def handle_topic_stripe_to_local(msg):
         print("Unable to handle this message")
 
 
-def handle_topic_local_to_stripe(msg):
+def handle_topic_local_to_stripe(msg: Message) -> None:
+    """
+    Handle messages from the 'localtostripe' Kafka topic.
+
+    Parameters:
+    - msg (Message): Kafka message object.
+
+    Returns:
+    None
+    """
     partition = msg.partition()
     if partition == 0:
         # Create
@@ -115,7 +133,16 @@ def handle_topic_local_to_stripe(msg):
         print("Unable to handle this message")
 
 
-def handle_message(msg: Message):
+def handle_message(msg: Message) -> None:
+    """
+    Handle Kafka messages based on their topics.
+
+    Parameters:
+    - msg (Message): Kafka message object.
+
+    Returns:
+    None
+    """
     topic = msg.topic()
     if topic == "localtostripe":
         handle_topic_local_to_stripe(msg)
