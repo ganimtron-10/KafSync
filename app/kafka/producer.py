@@ -1,6 +1,7 @@
 import json
 
 from confluent_kafka import Producer, Message
+from confluent_kafka.error import ProduceError
 
 p = Producer({'bootstrap.servers': 'localhost'})
 

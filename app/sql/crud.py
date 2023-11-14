@@ -2,6 +2,7 @@ import json
 
 from typing import List, Tuple
 from sqlalchemy.orm import Session
+from sqlalchemy import exc
 
 from . import models, schemas
 from ..kafka import producer
@@ -77,7 +78,7 @@ def create_customer(db: Session, customer: schemas.Customer, create_message: boo
                     json.dumps(data), topic="localtostripe", partition=0)
                 msg_sucess = True
         return db_customer
-    except Exception as e:
+    except (exec.SQLAlchemyError, producer.ProduceError):
         print(e)
         if msg_sucess:
             # reverting the produced message action
@@ -117,7 +118,7 @@ def update_customer(db: Session, customer_id: int, customer: schemas.Customer, c
                         json.dumps(data), topic="localtostripe", partition=1)
                     msg_sucess = True
                 return row_cnt
-    except Exception as e:
+    except (exec.SQLAlchemyError, producer.ProduceError):
         print(e)
         if msg_sucess:
             # reverting the produced message action
@@ -157,7 +158,7 @@ def delete_customer(db: Session, customer_id: int, create_message: bool = True) 
                         json.dumps(data), topic="localtostripe", partition=2)
                     msg_sucess = True
                 return row_cnt
-    except Exception as e:
+    except (exec.SQLAlchemyError, producer.ProduceError):
         print(e)
         if msg_sucess:
             # reverting the produced message action
