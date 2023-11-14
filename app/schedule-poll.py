@@ -54,7 +54,7 @@ def poll_stripe_customers():
     customers = stripe_crud.get_customer_list()
 
     if customers.get("error") is not None:
-        print(stripe_customer_data)
+        print(customers.get("error"))
         return
 
     sync_customer(customers)
