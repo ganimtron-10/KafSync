@@ -61,19 +61,31 @@ def create_customer(db: Session, customer: schemas.Customer, create_message: boo
     Returns:
     models.Customer: Created customer object.
     """
+    msg_sucess = None
     db_customer = models.Customer(email=customer.email, name=customer.name)
-    db.add(db_customer)
-    db.flush()
-    db.refresh(db_customer)
-    if create_message:
-        data = {
-            "customer_id": db_customer.id,
-            "customer": customer.model_dump()
-        }
-        producer.produce_message(
-            json.dumps(data), topic="localtostripe", partition=0)
-    db.commit()
-    return db_customer
+    try:
+        with db.begin_nested():
+            db.add(db_customer)
+            db.flush()
+            db.refresh(db_customer)
+            if create_message:
+                data = {
+                    "customer_id": db_customer.id,
+                    "customer": customer.model_dump()
+                }
+                producer.produce_message(
+                    json.dumps(data), topic="localtostripe", partition=0)
+                msg_sucess = True
+        return db_customer
+    except Exception as e:
+        print(e)
+        if msg_sucess:
+            # reverting the produced message action
+            data = {
+                "customer_id": db_customer.id
+            }
+            producer.produce_message(
+                json.dumps(data), topic="localtostripe", partition=2)
 
 
 def update_customer(db: Session, customer_id: int, customer: schemas.Customer, create_message: bool = True) -> int:
