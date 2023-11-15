@@ -1,6 +1,6 @@
 import json
 
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from sqlalchemy.orm import Session
 from sqlalchemy import exc
 
@@ -50,7 +50,7 @@ def get_all_customer_with_externalid(db: Session, external_ids: List) -> List[Tu
     return db.query(models.Customer, models.IDMap).join(models.IDMap, models.Customer.id == models.IDMap.localid).all()
 
 
-def create_customer(db: Session, customer: schemas.Customer, create_message: bool = True) -> models.Customer:
+def create_customer(db: Session, customer: schemas.Customer, create_message: bool = True) -> Union[models.Customer, None]:
     """
     Create a new customer in the local database and produce a Kafka message.
 
@@ -90,7 +90,7 @@ def create_customer(db: Session, customer: schemas.Customer, create_message: boo
         raise  # bare raise to maintain the stack trace
 
 
-def update_customer(db: Session, customer_id: int, customer: schemas.Customer, create_message: bool = True) -> int:
+def update_customer(db: Session, customer_id: int, customer: schemas.Customer, create_message: bool = True) -> Union[int, None]:
     """
     Update an existing customer in the local database and produce a Kafka message.
 
@@ -132,7 +132,7 @@ def update_customer(db: Session, customer_id: int, customer: schemas.Customer, c
         raise  # bare raise to maintain the stack trace
 
 
-def delete_customer(db: Session, customer_id: int, create_message: bool = True) -> int:
+def delete_customer(db: Session, customer_id: int, create_message: bool = True) -> Union[int, None]:
     """
     Delete a customer from the local database and produce a Kafka message.
 
