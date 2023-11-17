@@ -30,7 +30,11 @@ async def create_customer(customer: schemas.Customer, db: Session = Depends(data
     if db_customer:
         raise HTTPException(
             status_code=400, detail="Email already registered")
-    return crud.create_customer(db=db, customer=customer)
+    try:
+        return crud.create_customer(db=db, customer=customer)
+    except:
+        raise HTTPException(
+            status_code=500, detail="Internal Server Error occured. Please try again later")
 
 
 @router.get('/{customer_id}', response_model=schemas.Customer)
@@ -65,8 +69,14 @@ async def modify_customer(customer_id: int, customer: schemas.Customer, db: Sess
     Returns:
     dict: Detail of the modification.
     """
-    cnt = crud.update_customer(db, customer_id, customer)
-    if not cnt:
+    update_cnt = None
+    try:
+        update_cnt = crud.update_customer(db, customer_id, customer)
+    except:
+        raise HTTPException(
+            status_code=500, detail="Internal Server Error occured. Please try again later")
+
+    if not update_cnt:
         raise HTTPException(
             status_code=404, detail="Customer not found")
     return {"detail": "Customer updated Sucessfully"}
@@ -84,8 +94,12 @@ async def remove_customer(customer_id: int, db: Session = Depends(database.get_d
     Returns:
     dict: Detail of the deletion.
     """
-
-    db_customer = crud.delete_customer(db, customer_id)
+    db_customer = None
+    try:
+        db_customer = crud.delete_customer(db, customer_id)
+    except:
+        raise HTTPException(
+            status_code=500, detail="Internal Server Error occured. Please try again later")
     if not db_customer:
         raise HTTPException(
             status_code=404, detail="Customer not found")
